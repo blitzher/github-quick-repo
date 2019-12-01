@@ -1,6 +1,7 @@
 import os
 from sys import argv
 import github as git
+import getpass
 from git_token import token
 
 def sys(*cmds): # run terminal cmds in current directory
@@ -20,18 +21,21 @@ def main():
     if not accept_name:
         return
 
-    projects_folder = "C:\\Users\\Skovborg\\Documents\\projects"
+    # get github user
+    github = git.Github(token)
+    user = github.get_user()
+
+    user_name = getpass.getuser()
+    projects_folder = "C:\\Users\\%s\\Documents\\projects" % user_name
     project_path = projects_folder + "\\" + project_name
 
-    remote_origin_url = r"https://github.com/blitzher/" + project_name
+    remote_origin_url = user.html_url + project_name
 
     # create project folder and go to directory
     sys("mkdir %s" % project_path)
     os.chdir(project_path)
 
     # create github repo if it doesn't already exist
-    github = git.Github(token)
-    user = github.get_user()
     if not project_name in [repo.name for repo in user.get_repos()]:
         user.create_repo(project_name)
     else:
