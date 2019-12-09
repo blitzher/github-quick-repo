@@ -15,11 +15,12 @@ def main():
         print(action_display)
         return
 
-    project_name = "_".join(argv[1:])
+    project_name = "-".join(argv[1:])
 
-    accept_name = bool({'y':1, 'n':0}[input('Accept "%s" as project name? (y/n) ' % project_name)])
-    if not accept_name:
-        return
+    if project_name != argv[1]:
+        accept_name = bool({'y':1, 'n':0}[input('Accept "%s" as project name? (y/n) ' % project_name)])
+        if not accept_name:
+            return
 
     # get github user
     github = git.Github(token)
@@ -29,7 +30,7 @@ def main():
     projects_folder = "C:\\Users\\%s\\Documents\\projects" % user_name
     project_path = projects_folder + "\\" + project_name
 
-    remote_origin_url = user.html_url + project_name
+    remote_origin_url = user.html_url + '/' + project_name
 
     # create project folder and go to directory
     sys("mkdir %s" % project_path)
@@ -43,17 +44,27 @@ def main():
         if not accept_overwrite:
             return
 
-    # initialize local repo and add remote origin
+    # initialize local repo
     cmds = [
         'echo "# test" >> README.md',
         "git init",
-        "type nul > README.md",
+        "type nul > README.md"
+    ]
+    sys(*cmds)
+
+    # add project name to README.md
+    with open('README.md', 'w') as readme:
+        readme.write("# %s" % project_name)
+
+    # commit to git and setup remote origin
+    cmds = [
         "git add .",
         "git commit -m %s" % ('"initial commit"'),
         "git remote add origin %s" % remote_origin_url,
         "git push -u origin master",
         "code %s" % project_path
     ]
+
     sys(*cmds)
 
 

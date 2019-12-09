@@ -1,1 +1,12 @@
+# ignore pycache and vscode
+__pycache__/
+.vscode/
+*.pyc
+
+# ignore pyinstaller files
+build/
+dist/
+*.spec
+
+# ignore git token
 git_token.py
